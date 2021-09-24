@@ -1,17 +1,24 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <div>
+    <h3>Country</h3>
+    <button>Capital</button>
+    <table>
+      <tr>
+        <th>id</th>
+        <th>country</th>
+        <th>insert_time</th>
+      </tr>
+      {/* <tr>
+        <td>db</td>
+        <td>db</td>
+        <td>db</td>
+      </tr> */}
+
+    </table>
+  </div>,
   document.getElementById('root')
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
