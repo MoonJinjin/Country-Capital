@@ -1,11 +1,9 @@
 package config
 
 import (
-	"context"
 	"fmt"
 
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var (
@@ -29,12 +27,12 @@ func getPostgresConnectionString() string {
 	return dataBase
 }
 
-func getMongoConnect() {
-	clientOptions := options.Client().ApplyURI("mongodb://192.168.187.129:27017")
-	client, err := mongo.Connect(context.TODO(), clientOptions)
-	if err != nil {
-		panic(err)
-	}
+// func getMongoConnect() {
+// 	clientOptions := options.Client().ApplyURI("mongodb://192.168.187.129:27017")
+// 	client, err := mongo.Connect(context.TODO(), clientOptions)
+// 	if err != nil {
+// 		panic(err)
+// 	}
 
-	DB = client
-}
+// 	DB = client
+// }

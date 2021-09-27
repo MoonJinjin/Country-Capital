@@ -1,17 +1,19 @@
 package main
 
 import (
-	"context"
+	"country_capital3/src/controller"
+	"country_capital3/src/storage"
 	"database/sql"
 	"fmt"
+	"net/http"
 	"strconv"
 	"time"
 
+	"github.com/labstack/echo/v4/middleware"
+
 	"github.com/labstack/echo/v4"
 	_ "github.com/lib/pq"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var (
@@ -39,6 +41,7 @@ func getPostgresConnect() (*sql.DB, error) {
 		panic(err)
 	}
 	defer db.Close()
+	fmt.Println("postgres open")
 
 	var id int
 	var country string
@@ -62,47 +65,65 @@ func getPostgresConnect() (*sql.DB, error) {
 	return db, err
 }
 
-func getMongoConnect() (*mongo.Client, error) {
-	clientOptions := options.Client().ApplyURI("mongodb://192.168.187.129:27017")
-	client, err := mongo.Connect(context.TODO(), clientOptions)
-	if err != nil {
-		panic(err)
-	}
-	collection := client.Database("testDB").Collection("test1")
+// func getMongoConnect() (*mongo.Client, error) {
+// 	clientOptions := options.Client().ApplyURI("mongodb://192.168.187.129:27017")
+// 	client, err := mongo.Connect(context.TODO(), clientOptions)
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	collection := client.Database("testDB").Collection("test1")
 
-	cur, err := collection.Find(context.TODO(), bson.D{{}})
-	if err != nil {
-		panic(err)
-	}
-	for cur.Next(context.TODO()) {
-		var elem bson.M
-		err := cur.Decode(&elem)
-		if err != nil {
-			panic(err)
-		}
-		fmt.Println(&elem)
-	}
+// 	cur, err := collection.Find(context.TODO(), bson.D{{}})
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	for cur.Next(context.TODO()) {
+// 		var elem bson.M
+// 		err := cur.Decode(&elem)
+// 		if err != nil {
+// 			panic(err)
+// 		}
+// 		fmt.Println(&elem)
+// 	}
 
-	cur.Close(context.TODO())
+// 	cur.Close(context.TODO())
 
-	DB = client
-	return DB, err
+// 	DB = client
+// 	return DB, err
+// }
+
+func hello(c echo.Context) error {
+	return c.String(http.StatusOK, "Hello, World!")
 }
 
 func main() {
 	e := echo.New()
-	e.Debug = true
+	storage.NewDB()
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+	e.GET("/", controller.GetCountry)
+	e.GET("/hello", hello)
 	e.Logger.Fatal(e.Start(":924"))
 
-	mgdb, err := getMongoConnect()
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(mgdb)
+	// mgdb, err := getMongoConnect()
+	// if err != nil {
+	// 	fmt.Println("Mongo Error")
+	// 	fmt.Println(err)
+	// }
+	// fmt.Println(mgdb)
 
-	post, err := getPostgresConnect()
-	if err != nil {
-		fmt.Println(err)
-	}
+	post, _ := getPostgresConnect()
+	// if err != nil {
+	// 	fmt.Println("Postgres Error")
+	// 	fmt.Println(err)
+	// }
 	fmt.Println(post)
+
+	// e.POST("/", func(c echo.Context) error {
+	// 	ca := new(Capitals)
+	// 	if err := c.Bind(ca); err != nil {
+	// 		return err
+	// 	}
+	// 	return c.JSON(http.StatusCreated, ca)
+	// })
 }
